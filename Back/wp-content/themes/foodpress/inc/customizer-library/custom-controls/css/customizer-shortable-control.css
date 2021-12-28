@@ -1,0 +1,12 @@
+ul.sortable-list .sortable-handle{
+	float: right;
+	cursor: move;
+}
+ul.sortable-list li{
+	padding: 7px;
+	border: 1px solid #e5e5e5;
+	background: #fafafa;
+}
+.sortable-list-hide{
+	display: none !important;
+}
