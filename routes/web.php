@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
             Route::resource('products', App\Http\Controllers\Admin\ProductController::class, ['names' => 'admin.products']);
             Route::post('products/image/create/{product}', [App\Http\Controllers\Admin\ProductController::class, 'uploadImage'])->name('admin.products.image.create');
             Route::delete('products/image/delete/{productImage}', [App\Http\Controllers\Admin\ProductController::class, 'destroyImage'])->name('admin.products.image.destroy');
+            Route::get('ProductUnitsPrices', [App\Http\Controllers\Admin\ProductController::class, 'ProductUnitsPrices'])->name('admin.products.ProductUnitsPrices');
             Route::resource('product-categories', App\Http\Controllers\Admin\ProductCategoryController::class, ['names' => 'admin.product-categories']);
             Route::resource('product-units', App\Http\Controllers\Admin\ProductUnitController::class, ['names' => 'admin.product-units']);
             Route::resource('shippings', App\Http\Controllers\Admin\ShippingController::class, ['names' => 'admin.shippings']);
@@ -80,6 +81,7 @@ Route::middleware('auth')->group(function () {
                 Route::post('/cart/notes', [App\Http\Controllers\Member\OrderFlowController::class, 'setNotes'])->name('member.order.notes');
             });
             Route::resource('invoice', App\Http\Controllers\Member\InvoiceController::class, ['names' => 'member.invoice'])->only(['index', 'show']);
+            Route::get('/prints/{invoice}', [App\Http\Controllers\Member\InvoiceController::class, 'prints'])->name('member.invoice.prints');
             Route::resource('customer-order', App\Http\Controllers\Member\CustomerOrderController::class, ['names' => 'member.customerorder'])->only(['index', 'update', 'destroy', 'show']);
             Route::patch('/customer-order/cancel/{invoice}', [App\Http\Controllers\Member\CustomerOrderController::class, 'cancel'])->name('member.customerorder.cancel');
             Route::prefix('review')->group(function () {
@@ -156,3 +158,8 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+

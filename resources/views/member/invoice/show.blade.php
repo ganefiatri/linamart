@@ -6,10 +6,10 @@
 
     @include('layouts.partial._header')
 
-    <div class="main-container container">
+
 
         @include('layouts.partial._message')
-
+    
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12">
                 <div class="d-flex flex-wrap justify-content-center mb-3">
@@ -31,6 +31,14 @@
                 </a>
             </div>
         </div>
+        <div class="row mb-2">
+            <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                <a href="{{ route('member.invoice.show', $invoice->id) }}" class="btn btn-outline-secondary" id="btnprn">
+                    <i class="bi bi-list-ul"></i> {{ __('Print Preview') }}
+                </a>
+            </div>
+        </div>
+
         <div class="row mb-4">
             <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                 <div class="card mb-3">
@@ -142,6 +150,7 @@
                                     $subtotal = 0;
                                 @endphp
                             @foreach ($invoice->orders as $order)
+                                {{dd($order)}}
                             <tr>
                                 <td>{{ $order->title }}</td>
                                 @php
@@ -164,7 +173,7 @@
                                 <td class="text-end text-bold"><b>{{ to_money_format($subtotal + $invoice->shipping_fee, '') }}</b></td>
                             </tr>
                             </table>
-                        </div>                        
+                        </div>
                         @endif
                     </div>
                 </div>
@@ -208,3 +217,11 @@
 </main>
 <!-- Page ends-->
 @endsection
+@section('js')
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#btnprn').printPage();
+        });
+    </script>
+@endsection
+

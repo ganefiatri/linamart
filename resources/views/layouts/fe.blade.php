@@ -21,7 +21,7 @@
     @endphp
     <meta name="robots" content="{{ $robots }}" />
     @yield('meta')
-    <link rel="manifest" href="{{ asset('manifest.json') }}" />
+    <link rel="manifest" href="{{ asset('/public/manifest.json') }}" />
 
     <!-- Favicons -->
     <link rel="apple-touch-icon" href="{{ asset('img/favicon180.png') }}" sizes="180x180">

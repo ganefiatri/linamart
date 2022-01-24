@@ -22,7 +22,7 @@
                     <div class="col-lg-8 col-md-8 col-sm-12">
                         <form action="{{ route('member.invoice.index') }}" class="d-flex align-items-center add-contact__form my-sm-0 my-2">
                             <div class="form-group mr-2">
-                                <input class="form-control mr-sm-2 border-0 box-shadow-none" type="search" name="q" placeholder="{{ __('Search by order number') }}" 
+                                <input class="form-control mr-sm-2 border-0 box-shadow-none" type="search" name="q" placeholder="{{ __('Search by order number') }}"
                                 aria-label="Search" value="{{ app('request')->input('q') }}" autocomplete="off">
                             </div>
                             <div class="form-group">
@@ -93,6 +93,9 @@
                                                     <li class="list-inline-item">
                                                         <a href="{{ route('member.invoice.show', $item->id) }}" title="show">
                                                             <i class="bi bi-eye size-22"></i>
+                                                        </a> |
+                                                        <a href="{{ route('member.invoice.prints', $item->id) }}" title="pdf">
+                                                            <i class="bi bi-file-pdf size-22"></i>
                                                         </a>
                                                     </li>
                                                  </ul>

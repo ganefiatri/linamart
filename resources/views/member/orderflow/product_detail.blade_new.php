@@ -119,12 +119,19 @@
                 <h4 class="text-color-theme mb-3">{{ $product->title }}</h4>
                 <div class="row mb-4">
                     <div class="col">
-                        <h5 class="mb-0">{{ $product->getFormatedNetPrice() }}
+                        <h5 class="mb-0" id="harge{{$product->title}}">Rp.{{ $product->price ?? "Pilih Unit Barang" }}
                             @if ($product->discount > 0)
-                            <s class="text-opac fw-light">{{ $product->getFormatedPrice() }}</s>
+                            <small class="text-opac fw-light">{{ $other->getFormatedPrice() }}</s>
                             @endif
                         </h5>
-                        <p class="text-opac">per 1 {{ $product->unit }}</p>
+                       
+                        <p class="text-opac">per 1 {{ $product->producttitle }}</p>
+                        <select class="form-select form-select-sm" style="width:auto;" id="myselection" aria-label="Default select example">
+                          <option selected value ="null,null,harge{{ $product->title }}">Pilih Unit</option>
+                          @foreach ($product2 as $row)
+                            <option value ="{{$row->producttitle}},{{$row->price}},harge{{$row->title}}">{{$row->producttitle}}</option>
+                          @endforeach
+                        </select>
                     </div>
                     @php
                         $carts = cart_items();
@@ -230,7 +237,15 @@
                                         @if ($other->discount > 0)
                                             <small class="text-decoration-line-through">{{ $other->getFormatedPrice() }}</small><br/>
                                         @endif
-                                        <span class="fw-bold fs-12">{{ $other->getFormatedNetPrice() }}</span><br><small class="text-opac">per 1 {{ $other->unit }}</small>
+                                        <!-- <span class="fw-bold fs-12">{{ $other->getFormatedNetPrice() }}</span><br> -->
+                                        <span class="fw-bold fs-12" id="harge2{{$other->title}}">{{ $allProductsUnit[$other->title]->price ?? "Pilih Unit Barang" }}</span></br>
+                                        <small class="text-opac">per 1 {{ $product->producttitle }}</small>
+                                        <select class="form-select form-select-sm" style="width:auto;" id="myselection" aria-label="Default select example">
+                                          <option selected value ="null,null,harge2{{$other->title}}">Pilih Unit</option>
+                                          @foreach ($allProductsUnit[$other->title] as $row)
+                                            <option value ="{{$row->title}},{{$row->price}},harge2{{$other->title}}">{{$row->title}}</option>
+                                          @endforeach
+                                        </select>
                                     </p>
                                 </div>
                                 <div class="col-auto">
@@ -264,6 +279,26 @@
 @section('js')
 <script src="{{ mix('js/cart.min.js') }}"></script>
 <script type="text/javascript">
+
+var databarang = "";
+var unitbarang = "";
+
+$(window).ready(function(){
+  var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+  $(".form-select.form-select-sm").change(function(){
+    console.log(this.value);
+    var str_arr =  this.value.split(",");
+    unitbarang = str_arr[0];
+    databarang = str_arr[1];
+    classbarang = str_arr[2];
+    if(unitbarang != "null"){
+      document.getElementById(classbarang).innerHTML = "Rp."+databarang;
+    }else{
+      document.getElementById(classbarang).innerHTML = "Pilih Unit Barang";
+    }
+  });
+});
+
 $(window).on('load', function () {
     if ($('.imageswiper').length > 0) {
         var swiper5 = new Swiper(".imageswiper", {
@@ -289,5 +324,6 @@ $(window).on('load', function () {
         });
     }
 });
+
 </script>
 @endsection

@@ -10,7 +10,6 @@ use App\Models\MailQueue;
 use App\Models\Notification;
 use App\Models\Order;
 use App\Models\Product;
-use App\Models\ProductUnitsPrices;
 use App\Models\ProductCategory;
 use App\Models\Shipping;
 use App\Models\Shop;
@@ -21,9 +20,8 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\DB;
 
-class OrderFlowController extends Controller
+class   OrderFlowController extends Controller
 {
     /**
      * Display product search results.
@@ -87,18 +85,7 @@ class OrderFlowController extends Controller
 
         $totActiveProduct = $products->total();
 
-        //
-        // foreach ($products as $key => $value) {
-        //   dd($value);
-        // }
-        $unitsProduct = DB::table('product_units')->get();
-        $allProductsUnit = array();
-        foreach ($products as $i => $key) {
-          $dataunit = DB::select('select * from product_units_prices INNER JOIN product_units ON product_units_prices.id_units=product_units.id where id_product = :product', ['product' => $key->id]);
-          $allProductsUnit[$key->title]=$dataunit;
-        }
-
-        return view('member.orderflow.product_search', compact('products', 'categories', 'totActiveProduct', 'allProductsUnit'));
+        return view('member.orderflow.product_search', compact('products', 'categories', 'totActiveProduct'));
     }
 
     /**
@@ -153,16 +140,11 @@ class OrderFlowController extends Controller
      */
     protected function detailProduct(String $slug)
     {
-        $product2 = DB::select("select *, product_units.title as producttitle, products.title as title FROM products LEFT JOIN product_units_prices ON product_units_prices.id_product =products.id LEFT JOIN product_units ON product_units_prices.id_units = product_units.id LEFT JOIN shops on shops.id = products.shop_id WHERE products.slug = :slug and shops.status = 1", ['slug' => $slug]);
-        $product = Product::select('*','product_units.title as producttitle','products.title as title')
+        $product = Product::where('slug', $slug)
             ->whereHas('shop', function ($q) {
                 $q->where('status', 1);
             })
-            ->leftjoin('product_units_prices', 'product_units_prices.id_product', '=', 'products.id')
-            ->join('product_units', 'product_units.id', '=', 'product_units_prices.id_units')->where('slug', $slug)
             ->firstOrFail();
-        //
-        // dd($product2);
         $otherProducts = Product::where('shop_id', $product->shop_id)
             ->where('active', 1)
             ->where('enabled', 1)
@@ -170,8 +152,6 @@ class OrderFlowController extends Controller
             ->limit(10)
             ->orderBy('created_at', 'desc')
             ->get();
-
-
 
         if ($product instanceof \App\Models\Product) {
             $product_views = session('product_views', []);
@@ -185,14 +165,7 @@ class OrderFlowController extends Controller
             }
         }
 
-        $allProductsUnit = array();
-        foreach ($otherProducts as $key) {
-          $dataunit = DB::select('select * from product_units_prices INNER JOIN product_units ON product_units_prices.id_units=product_units.id where id_product = :product', ['product' => $key->id]);
-          $allProductsUnit[$key->title]=$dataunit;
-        }
-        // dd($allProductsUnit);
-
-        return view('member.orderflow.product_detail', compact('product','product2', 'otherProducts','allProductsUnit'));
+        return view('member.orderflow.product_detail', compact('product', 'otherProducts'));
     }
 
     /**

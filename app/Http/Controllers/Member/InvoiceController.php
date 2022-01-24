@@ -8,6 +8,8 @@ use App\Models\Invoice;
 use App\Models\Lookup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use \PDF;
+use function YoastSEO_Vendor\GuzzleHttp\Promise\all;
 
 class InvoiceController extends Controller
 {
@@ -23,7 +25,7 @@ class InvoiceController extends Controller
         if ($member === null) {
             abort(401);
         }
-        
+
         $items = Invoice::where('member_id', $member->id)->orderBy('id', 'desc')
             ->paginate(10);
 
@@ -61,7 +63,7 @@ class InvoiceController extends Controller
             ->toArray();
 
         $showFooter = true;
-        
+
         return view('member.invoice.index', compact('items', 'statusList', 'showFooter', 'orderStatusList'));
     }
 
@@ -81,11 +83,30 @@ class InvoiceController extends Controller
         if ($member->id != $invoice->member_id) {
             abort(401);
         }
-        
+
         $orderStatusList = Lookup::where('type', 'OrderStatus')
             ->orderBy('position')->pluck('name', 'code')
             ->toArray();
 
-        return view('member.invoice.show', compact('invoice', 'orderStatusList'));
+        return View('member.invoice.show', compact('invoice', 'orderStatusList'));
     }
+
+    public function prints(Invoice $invoice){
+        $member = (!empty(Auth::user())) ? Auth::user()->member : null;
+        if ($member === null) {
+            abort(401);
+        }
+
+        if ($member->id != $invoice->member_id) {
+            abort(401);
+        }
+
+        $orderStatusList = Lookup::where('type', 'OrderStatus')
+            ->orderBy('position')->pluck('name', 'code')
+            ->toArray();
+
+        $pdf = PDF::loadview('member.invoice.printpdf', compact('invoice', 'orderStatusList'))->setPaper('A8', 'portrait');;
+        return $pdf->stream('invoice.pdf');
+    }
+
 }

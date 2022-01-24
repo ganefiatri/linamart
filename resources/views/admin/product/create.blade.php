@@ -61,33 +61,66 @@
                                     <textarea class="form-control" id="content" name="description" placeholder="Enter Description">{{ old('description') }}</textarea>
                                 </div>
                             </div>
-                            <div class="row mb-3">
-                                <div class="form-group col-sm-6">
+
+                            {{--add more --}}
+                            <div class="hapus row mb-3 after-add-more">
+                                <div class="form-group col-sm-3">
                                     <label for="price">{{ __('Price') }} :</label>
                                     <input type="text" class="form-control" id="price" placeholder="Enter product price" name="price" value="{{ old('price') }}" required>
                                 </div>
-                                <div class="form-group col-sm-6">
+                                <div class="form-group col-sm-3">
+                                    <label for="Unit">{{ __('Unit') }} :</label>
+{{--                                    @php--}}
+{{--                                        $units = get_product_units();--}}
+{{--                                    @endphp--}}
+                                    <select class="form-control" name="unit_id">
+                                        @foreach ($units as $unit)
+                                            <option value="{{ $unit->id }}" @if ($unit->id == old('unit->id')) selected="selected" @endif>{{$unit->title}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            {{--more--}}
+                            <div class="row mb-3">
+                                <div class="form-group col-sm-3">
+                                    <input type="text" class="form-control" id="price" placeholder="Enter product price" name="price2" value="{{ old('price') }}" required>
+                                </div>
+                                <div class="form-group col-sm-3">
+                                    <select class="form-control" name="unit_id2">
+                                        @foreach ($units as $unit)
+                                            <option value="{{ $unit->id }}" @if ($unit->id == old('unit->id')) selected="selected" @endif>{{$unit->title}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="form-group col-sm-3">
+                                    <input type="text" class="form-control" id="price" placeholder="Enter product price" name="price3" value="{{ old('price') }}" required>
+                                </div>
+                                <div class="form-group col-sm-3">
+                                    <select class="form-control" name="unit_id3">
+                                        @foreach ($units as $unit)
+                                            <option value="{{ $unit->id }}" @if ($unit->id == old('unit->id')) selected="selected" @endif>{{$unit->title}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="form-group col-sm-4">
                                     <label for="discount">{{ __('Discount') }} :</label>
                                     <input type="text" class="form-control" id="discount" placeholder="Enter Product discount" name="discount" value="{{ old('discount') }}">
                                 </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="form-group col-sm-6">
+                                <div class="form-group col-sm-4">
                                     <label for="stock">{{ __('Stock') }} :</label>
                                     <input type="text" class="form-control" id="stock" placeholder="Enter product stock" name="stock" value="{{ old('stock') }}" required>
                                 </div>
-                                <div class="form-group col-sm-6">
+                                <div class="form-group col-sm-4">
                                     <label for="weight">{{ __('Weight') }} :</label>
                                     <div class="input-group mb-3">
                                         <input type="text" class="form-control" id="weight" placeholder="Enter Product weight" name="weight" value="{{ old('weight') }}">
-                                        @php
-                                            $units = get_product_units();
-                                        @endphp
-                                        <select class="form-select" name="unit" aria-label="Example select with button addon">
-                                            @foreach ($units as $unit => $unit_name)
-                                                <option value="{{ $unit }}" @if ($unit == old('unit')) selected="selected" @endif>{{ $unit }}</option>
-                                            @endforeach
-                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -128,7 +161,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div>yy
                                 </div>
                             </div>
                             <div class="row">
@@ -145,4 +178,7 @@
     </div>
 </main>
 <!-- Page ends-->
+
+
 @endsection
+

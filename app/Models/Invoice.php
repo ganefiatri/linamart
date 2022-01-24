@@ -72,6 +72,12 @@ class Invoice extends Model
         return $this->belongsTo(Member::class, 'member_id', 'id');
     }
 
+    public function getinvoice(){
+        $test = invoice::where('id', 715)
+            ->get();
+        return $test;
+    }
+
     /**
      * Invoice to Shop relationship
      *
@@ -232,4 +238,6 @@ class Invoice extends Model
 
         return (strlen($status) > 0)? ($dates[$status] ?? null) : $dates;
     }
+
+
 }

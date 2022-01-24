@@ -145,12 +145,13 @@
                                         @if ($latestProduct->discount > 0)
                                             <small class="text-decoration-line-through">{{ $latestProduct->getFormatedPrice() }}</small><br/>
                                         @endif
-                                        <small class="fw-bold fs-12" id="harge{{$latestProduct->title}}">{{ $allProductsUnit[$latestProduct->title]->price ?? "Pilih Unit Barang" }}</small></br></br>
+                                            <span class="fw-bold fs-12" id="show1" style="display: none">{{ $latestProduct->getFormatedNetPrice() }}</span><br>
+                                            <span class="fw-bold fs-12" id="show2" style="display: none">{{ $latestProduct->getFormatedNetPrice_second() }}</span><br>
+                                            <span class="fw-bold fs-12" id="show3" style="display: none">{{ $latestProduct->getFormatedNetPrice_third() }}</span><br>
                                             <select class="form-select form-select-sm" style="width:auto;" id="myselection" aria-label="Default select example">
-                                              <option selected value ="null,null,harge{{$latestProduct->title}}">Pilih Unit</option>
-                                                @foreach ($allProductsUnit[$latestProduct->title] as $row)
-                                                  <option value ="{{$row->title}},{{$row->price}},harge{{$latestProduct->title}}">{{$row->title}}</option>
-                                                @endforeach
+                                                <option value="1">{{ $latestProduct->weight ?? 1 }} {{ $latestProduct->unit }}</option>
+                                                <option value="2">{{ $latestProduct->weight ?? 1 }} {{ $latestProduct->unit2 }}</option>
+                                                <option value="3">{{ $latestProduct->weight ?? 1 }} {{ $latestProduct->unit3 }}</option>
                                             </select>
                                     </p>
                                 </div>
@@ -234,9 +235,7 @@
                                             </tr>
                                         @endforeach
                                         </table>
-
                                     </div>
-
                                   </div>
                                 </div>
                             </div>
@@ -264,18 +263,9 @@
                                         @if ($bestProduct->discount > 0)
                                             <small class="text-decoration-line-through">{{ $bestProduct->getFormatedPrice() }}</small><br/>
                                         @endif
-                                        <span class="fw-bold fs-12" id="harge{{$bestProduct->title}}">{{ $allBestProductsUnit[$bestProduct->title]->price ?? "Pilih Unit Barang" }}</span><br><small class="text-opac">{{ $bestProduct->weight ?? 1 }} {{ $bestProduct->unit }}</small>
+                                        <span class="fw-bold fs-12">{{ $bestProduct->getFormatedNetPrice() }}</span><br><small class="text-opac">{{ $bestProduct->weight ?? 1 }} {{ $bestProduct->unit }}</small>
                                     </p>
                                 </div>
-
-                                <!-- dropdown harga favorit product -->
-                                <small></small></br>
-                                    <select class="form-select form-select-sm" style="width:auto;" id="myselection" aria-label="Default select example">
-                                      <option selected value ="null,null,harge{{$bestProduct->title}}">Pilih Unit</option>
-                                        @foreach ($allBestProductsUnit[$bestProduct->title] as $row)
-                                          <option value ="{{$row->title}},{{$row->price}},harge{{$bestProduct->title}}">{{$row->title}}</option>
-                                        @endforeach
-                                    </select>
                                 <div class="col-auto">
                                     <!-- button counter increamenter-->
                                     <div class="counter-number" attr-href="{{ route('member.order.addtocart', ['product' => $bestProduct]) }}">
@@ -291,9 +281,7 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
-
                     </div>
                 </div>
                 @endforeach
@@ -392,7 +380,6 @@
         </div>
     </div>
 </div>
-
 <!-- add cart modal ends -->
 
 @endsection
@@ -400,26 +387,6 @@
 @section('js')
 <script src="{{ mix('js/cart.min.js') }}"></script>
 <script type="text/javascript">
-
-var databarang = "";
-var unitbarang = "";
-
-$(window).ready(function(){
-  var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-  $(".form-select.form-select-sm").change(function(){
-    console.log("halo");
-    var str_arr =  this.value.split(",");
-    unitbarang = str_arr[0];
-    databarang = str_arr[1];
-    classbarang = str_arr[2];
-    if(unitbarang != "null"){
-      document.getElementById(classbarang).innerHTML = "Rp."+databarang;
-    }else{
-      document.getElementById(classbarang).innerHTML = "Pilih Unit Barang";
-    }
-  });
-});
-
 $(window).on('load', function () {
     if ($('.categoriesswiper').length > 0) {
         var swiper1 = new Swiper(".categoriesswiper", {
@@ -442,13 +409,21 @@ $(window).on('load', function () {
         });
     }
 });
-
-
-
 </script>
 
 <script type="text/javascript">
-
+    $(document).ready(function(){
+        $("#myselection").change(function(){
+            $(this).find("option:selected").each(function(){
+                var val = $(this).attr("value");
+                if(val){
+                    $("#show").not("#show" + val).hide();
+                    $("#show" + val).show();
+                } else{
+                    $("#show").hide();
+                }
+            });
+        }).change();
+    });
 </script>
-
 @endsection

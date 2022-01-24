@@ -85,7 +85,7 @@ class HomeController extends Controller
                         ->limit(20)
                         ->pluck('product_id')
                         ->toArray();
-
+    
                     $sort = implode(',', $productsIds);
                     return Product::whereIn('id', $productsIds)
                         ->orderByRaw("FIELD(id, $sort)")
@@ -101,31 +101,13 @@ class HomeController extends Controller
                 ->limit(20)
                 ->get();
         }
-        $unitsProduct = DB::table('product_units')->get();
-        $allProductsUnit = array();
-        $allBestProductsUnit = array();
-        foreach ($latestProducts as $key) {
-          $dataunit = DB::select('select * from product_units_prices INNER JOIN product_units ON product_units_prices.id_units=product_units.id where id_product = :product', ['product' => $key->id]);
-          $allProductsUnit[$key->title]=$dataunit;
-        }
-        //$dataunit = DB::select('select * from product_units_prices where id_product = :product and id_units = :unit', ['product' => $latestProducts->id,'unit' => $latestProducts->id]);
-        // untuk for eachkan semua best product
-        foreach ($bestProducts as $key) {
-          $dataunit = DB::select('select * from product_units_prices INNER JOIN product_units ON product_units_prices.id_units=product_units.id where id_product = :product', ['product' => $key->id]);
-          $allBestProductsUnit[$key->title]=$dataunit;
-        }
-        // foreach ($latestProducts as $data) {
-        //   $str_arr = explode (",", $data->unit);
-        //   $unitproduk[$data->title] = $str_arr;
-        // }
+
         return view('member.home', compact(
             'categories',
             'latestProducts',
             'shops',
             'totActiveProduct',
-            'bestProducts',
-            'allProductsUnit',
-            'allBestProductsUnit'
+            'bestProducts'
         ));
     }
 

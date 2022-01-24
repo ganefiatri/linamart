@@ -3,9 +3,7 @@
 @section('content')
 <!-- Begin page -->
 <main class="h-100 has-header has-footer">
-
     @include('layouts.partial._header')
-
     <div class="main-container container">
 
         @include('layouts.partial._message')
@@ -75,49 +73,50 @@
                                     </select>
                                 </div>
                             </div>
-{{--                            add more --}}
+
+                            {{--add more --}}
                             <div class="hapus row mb-3 after-add-more">
                                 <div class="form-group col-sm-3">
                                     <label for="price">{{ __('Price') }} :</label>
-                                    <input type="text" class="form-control" id="price" placeholder="Enter product price" name="price" value="{{ $product->price }}" required>
+                                        <input type="text" class="form-control" id="price" placeholder="Enter product price" name="price" @if (count($unit_price) > 0) value="{{ $unit_price[0]->price}}" @endif required>
                                 </div>
-                                <div class="form-group col-sm-2">
+                                <div class="form-group col-sm-3">
                                     <label for="Unit">{{ __('Unit') }} :</label>
-                                    <select class="form-control form-control">
-                                        @foreach ($productUnit->all() as $unit)
-                                            <option>{{ $unit->title }}</option>
+{{--                                    @php--}}
+{{--                                        $units = get_product_units();--}}
+{{--                                    @endphp--}}
+                                    <select class="form-control" name="unit_id">
+                                        @foreach ($units as $unit)
+                                                <option value="{{ $unit->id }}" @if ($unit->id == $product->unit_id) selected="selected" @endif>{{ $unit->title }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group col-sm-1">
-                                    <br>
-                                    <button class="btn btn-success add-more" type="button">
-                                        <i class="glyphicon glyphicon-plus"></i> +
-                                    </button>
+                            </div>
+
+                            {{--more--}}
+                            <div class="row mb-3">
+                                <div class="form-group col-sm-3">
+                                    <input type="text" class="form-control" id="price" placeholder="Enter product price" name="price2" @if (count($unit_price) > 0) value="{{ $unit_price[1]->price}}" @endif required>
+                                </div>
+                                <div class="form-group col-sm-3">
+                                    <select class="form-control" name="unit_id2">
+                                        @foreach ($units as $unit)
+                                            <option value="{{ $unit->id }}" @if ($unit->id == $product->unit_id2) selected="selected" @endif>{{ $unit->title }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
 
-{{--                            hide more--}}
-                            <div class="copy invisible">
-                                <div class="row mb-3 hapus">
-                                    <div class="form-group col-sm-3">
-                                        <label for="price">{{ __('Price') }} :</label>
-                                        <input type="text" class="form-control" id="price" placeholder="Enter product price" name="price" value="{{ $product->price }}" required>
-                                    </div>
-                                    <div class="form-group col-sm-2">
-                                        <label for="Unit">{{ __('Unit') }} :</label>
-                                        <select class="form-control form-control">
-                                            @foreach ($productUnit->all() as $unit)
-                                                <option>{{ $unit->title }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="form-group col-sm-1">
-                                        <br>
-                                        <button class="btn btn-danger remove" type="button">
-                                            <i class="glyphicon glyphicon-remove"></i> -
-                                        </button>
-                                    </div>
+                            <div class="row mb-3">
+                                <div class="form-group col-sm-3">
+                                    <input type="text" class="form-control" id="price" placeholder="Enter product price" name="price3" @if (count($unit_price) > 0) value="{{ $unit_price[2]->price}}" @endif required>
+                                </div>
+                                <div class="form-group col-sm-3">
+                                    <select class="form-control" name="unit_id3">
+                                        @foreach ($units as $unit)
+                                            <option value="{{ $unit->id }}" @if ($unit->id == $product->unit_id3) selected="selected" @endif>{{ $unit->title }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
 
@@ -134,14 +133,7 @@
                                     <label for="weight">{{ __('Weight') }} :</label>
                                     <div class="input-group mb-3">
                                         <input type="text" class="form-control" id="weight" placeholder="Enter Product weight" name="weight" value="{{ $product->weight }}">
-                                        @php
-                                            $units = get_product_units();
-                                        @endphp
-                                        <select class="form-select" name="unit" aria-label="Example select with button addon">
-                                            @foreach ($units as $unit => $unit_name)
-                                                <option value="{{ $unit }}" @if ($unit == $product->unit) selected="selected" @endif>{{ $unit }}</option>
-                                            @endforeach
-                                        </select>
+
                                     </div>
                                 </div>
                             </div>
@@ -184,6 +176,7 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
+                                <input type="hidden" name="id_product" value="{{ $product->id }}"/>
                                 <div class="form-group col-sm-12">
                                     <button type="submit" class="btn btn-lg btn-default shadow-sm">{{ __('Update Now') }}</button>
                                 </div>
@@ -312,7 +305,7 @@
     }
 </script>
 
-{{--                            script js show hide--}}
+{{--script js show hide--}}
 <script type="text/javascript">
     $(document).ready(function() {
         $(".add-more").click(function(){
@@ -326,4 +319,19 @@
         });
     });
 </script>
+<script>
+    function getData() {
+        console.log("Hej");
+        $.getJSON('http://localhost:53209/api/items', function (data) {
+            var html = '';
+            var len = data.length;
+            for (var i = 0; i < len; i++) {
+                html += '<option = value"' + data[i].Name + '">' + data[i].Name + '</option>';
+            }
+            // console.log(html);
+            $('itemSelect').append(html);
+        });
+    }
+</script>
+
 @endsection

@@ -9,6 +9,7 @@ use App\Models\ProductCategory;
 use App\Models\ProductUnit;
 use App\Models\ProductImage;
 use App\Models\Shop;
+use App\Models\ProductUnitsPrices;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -16,7 +17,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-
+use Mavinoo\Batch\Batch;
+use DB;
 class ProductController extends Controller
 {
     /**
@@ -60,7 +62,7 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function create(Request $request)
+    public function create(Request $request , ProductUnit $productUnit)
     {
         if (!$request->has('shop_id')) {
             abort(401);
@@ -76,9 +78,10 @@ class ProductController extends Controller
             ->orWhere('shop_id', 0)
             ->pluck('title', 'id')->all();
 
+        $units = ProductUnit::all();
         $showFooter = true;
 
-        return view('admin.product.create', compact('status_list', 'category_list', 'showFooter', 'shop_id'));
+        return view('admin.product.create', compact('status_list','productUnit','units', 'category_list', 'showFooter', 'shop_id'));
     }
 
     /**
@@ -100,13 +103,18 @@ class ProductController extends Controller
                 }
             ],
             'category_id' => 'required',
-            'price' => 'required|numeric',
             'stock' => 'required|numeric',
             'discount' => 'nullable|numeric|lt:price',
             'weight' => 'nullable|numeric',
+            'unit_id' => 'required|numeric',
+            'unit_id2' => 'required|numeric',
+            'unit_id3' => 'required|numeric',
         ]);
 
+//        ProductUnitsPrices::insert($data);
+
         $create_data = $request->all();
+
         // create slug
         $create_data['slug'] = Str::slug($create_data['title']);
         $checkSlug = Product::where('slug', $create_data['slug'])->first();
@@ -116,7 +124,18 @@ class ProductController extends Controller
 
         $create_data['enabled'] = (isset($create_data['enabled'])) ? 1 : 0;
         $create_data['hidden'] = (isset($create_data['hidden'])) ? 1 : 0;
-        Product::create($create_data);
+        $product = Product::create($create_data);
+
+        $lastInsertedId = $product->id; //get last inserted record's user id value
+        $data = [
+            ['id_product'=> $lastInsertedId, 'id_units'=> $request->unit_id, 'price' => $request->price],
+            ['id_product'=> $lastInsertedId,'id_units'=> $request->unit_id2, 'price' => $request->price2],
+            ['id_product'=> $lastInsertedId,'id_units'=> $request->unit_id3, 'price' => $request->price3],
+        ];
+
+//        $productId = array('id_product'=>$lastInsertedId); //put this value equal to datatable column name where it will be saved
+         //update newly created record by storing the value of last inserted id
+       ProductUnitsPrices::insert($data);
 
         return redirect()->back()->with('create', 'Data Anda telah berhasil disimpan.');
     }
@@ -156,9 +175,13 @@ class ProductController extends Controller
             ->orWhere('shop_id', 0)
             ->pluck('title', 'id')->all();
 
+        $unit_price = ProductUnitsPrices::where('id_product', $product->id)->get();
+
+        $units = ProductUnit::all();
+
         $showFooter = true;
 
-        return view('admin.product.edit', compact('product','productUnit', 'status_list', 'category_list', 'showFooter'));
+        return view('admin.product.edit', compact('product','productUnit', 'status_list', 'category_list', 'showFooter','unit_price','units'));
     }
 
     /**
@@ -168,7 +191,7 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, Product $product, ProductUnitsPrices $productUnitsPrices)
     {
         $request->validate([
             'title' => [
@@ -190,10 +213,18 @@ class ProductController extends Controller
                 }
             ],
             'category_id' => 'required',
-            'price' => 'required|numeric',
             'stock' => 'required|numeric',
             'discount' => 'nullable|numeric|lt:price',
             'weight' => 'nullable|numeric',
+        ]);
+
+        $data = ['id_product'=> $request->id_product,'id_units'=> $request->unit_id, 'price' => $request->price];
+        
+
+        DB::table('product_units_prices')->where('id_product', $request->id_product)->update([
+            ['id_product'=> $request->id_product,'id_units'=> $request->unit_id, 'price' => $request->price],
+            ['id_product'=> $request->id_product,'id_units'=> $request->unit_id2, 'price' => $request->price2],
+            ['id_product'=> $request->id_product,'id_units'=> $request->unit_id3, 'price' => $request->price3]
         ]);
 
         $update_data = $request->all();
@@ -301,5 +332,10 @@ class ProductController extends Controller
         $productImage->delete();
 
         return redirect()->back()->with('delete', $message);
+    }
+
+    public function ProductUnitsPrices(){
+        $unitprice = ProductUnitsPrices::all();
+        return view('test.testview',compact('unitprice'));
     }
 }

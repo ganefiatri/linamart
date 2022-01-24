@@ -20,9 +20,10 @@ class Product extends Model
         'title',
         'slug',
         'description',
-        'unit',
+        'unit_id',
+        'unit_id2',
+        'unit_id3',
         'weight',
-        'price',
         'discount',
         'stock',
         'related_ids',
@@ -42,6 +43,16 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(ProductCategory::class, 'category_id', 'id');
+    }
+
+    /**
+     * Product to Category relationship
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function unitprice()
+    {
+        return $this->belongsTo(ProductUnitsPrices::class, 'unit_id', 'id');
     }
 
     /**
@@ -113,6 +124,37 @@ class Product extends Model
     }
 
     /**
+     * new code i made by ganefiatri
+     */
+    public function getFormatedPrice_second($prefix = 'Rp ', $suffix = ''): string
+    {
+        $format = number_format($this->price2 ?? 0, 0, ',', '.');
+        return $prefix . $format . $suffix;
+    }
+
+    public function getFormatedNetPrice_second($prefix = 'Rp ', $suffix = ''): string
+    {
+        $price = floatval($this->price2 ?? 0);
+        $discount = floatval($this->discount ?? 0);
+        $format = number_format(($price - $discount), 0, ',', '.');
+        return $prefix . $format . $suffix;
+    }
+
+    public function getFormatedPrice_third($prefix = 'Rp ', $suffix = ''): string
+    {
+        $format = number_format($this->price3 ?? 0, 0, ',', '.');
+        return $prefix . $format . $suffix;
+    }
+
+    public function getFormatedNetPrice_third($prefix = 'Rp ', $suffix = ''): string
+    {
+        $price = floatval($this->price3 ?? 0);
+        $discount = floatval($this->discount ?? 0);
+        $format = number_format(($price - $discount), 0, ',', '.');
+        return $prefix . $format . $suffix;
+    }
+
+    /**
      * Get default image for product
      *
      * @param integer $width
@@ -177,5 +219,10 @@ class Product extends Model
         ->toArray();
 
         return $statusList[$this->active];
+    }
+
+    public function get_product_units(){
+        $units = ProductUnit::all();
+        return $units;
     }
 }
